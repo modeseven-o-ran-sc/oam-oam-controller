@@ -80,25 +80,26 @@ jobs:
         env:
           GERRIT_PROJECT: ${{ inputs.GERRIT_PROJECT }}
 
-  maven-verify:
-    needs: [sanitize]
-    # use compose-jjb-verify from the v0.4 series of releng-reusable-workflows
-    # yamllint disable-line rule:line-length
-    uses: ravipendurty/releng-reusable-workflows/.github/workflows/compose-make-verify.yaml@main
-    with:
-      GERRIT_BRANCH: ${{ inputs.GERRIT_BRANCH }}
-      GERRIT_CHANGE_ID: ${{ inputs.GERRIT_CHANGE_ID }}
-      GERRIT_CHANGE_NUMBER: ${{ inputs.GERRIT_CHANGE_NUMBER }}
-      GERRIT_CHANGE_URL: ${{ inputs.GERRIT_CHANGE_URL }}
-      GERRIT_EVENT_TYPE: ${{ inputs.GERRIT_EVENT_TYPE }}
-      GERRIT_PATCHSET_NUMBER: ${{ inputs.GERRIT_PATCHSET_NUMBER }}
-      GERRIT_PATCHSET_REVISION: ${{ inputs.GERRIT_PATCHSET_REVISION }}
-      GERRIT_PROJECT: ${{ github.repository_owner }}/${{ needs.sanitize.outputs.sanitized_project }}
-      GERRIT_REFSPEC: ${{ inputs.GERRIT_REFSPEC }}
-      JDK_VERSION: "21"
-      MVN_VERSION: "3.9.6"
-      # yamllint enable rule:line-length
-      ENV_VARS: ${{ toJSON(vars) }}
+  make-verify:
+    runs-on: ubuntu-latest
+    steps:
+      # yamllint disable-line rule:line-length
+      - uses: lfit/checkout-gerrit-change-action@54d751e8bd167bc91f7d665dabe33fae87aaaa63 # v0.9
+        with:
+          gerrit-refspec: ${{ inputs.GERRIT_REFSPEC }}
+          gerrit-url: ${{ vars.GERRIT_URL }}
+          repository: ${{ inputs.GERRIT_PROJECT }}
+          delay: "0s"
+
+      - name: Run Make
+        # yamllint disable-line rule:line-length
+        uses: ravipendurty/releng-reusable-workflows/.github/actions/make-build-action@main # main
+        with:
+          jdk-version: "21"
+          mvn-version: "3.9.6"
+          make-targets: ${{ inputs.MAKE_TARGETS }}
+          env-vars: ${{ toJSON(vars) }}
+          # nv-secrets: ${{ inputs.ENV_SECRETS }}
 
   # vote:
   #   if: ${{ always() }}
