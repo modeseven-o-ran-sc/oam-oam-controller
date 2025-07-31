@@ -7,7 +7,7 @@ name: Gerrit Composed Maven Merge
 # yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
-    inputs:
+    # inputs:
       #GERRIT_BRANCH:
       #  description: "Branch that change is against"
       #  required: true
@@ -38,7 +38,7 @@ on:
       #  type: string
       #GERRIT_PROJECT:
       #  description: "Project in Gerrit"
-        type: string
+      #  type: string
       ##  required: true
       #GERRIT_REFSPEC:
       #  description: "Gerrit refspec of change"
@@ -47,36 +47,25 @@ on:
 
 concurrency:
   # yamllint disable-line rule:line-length
-  group: compose-make-merge-${{ github.workflow }}-${{ github.event.inputs.GERRIT_CHANGE_ID || github.run_id }}
+  #group: compose-make-merge-${{ github.workflow }}-${{ github.event.inputs.GERRIT_CHANGE_ID || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  sanitize:
-    runs-on: ubuntu-latest
-    outputs:
-      sanitized_project: ${{ steps.sanitize.outputs.result }}
-    steps:
-      - name: Sanitize GERRIT_PROJECT
-        id: sanitize
-        run: echo "result=${GERRIT_PROJECT//\//-}" >> $GITHUB_OUTPUT
-        env:
-          GERRIT_PROJECT: ${{ inputs.GERRIT_PROJECT }}
-
-  maven-merge:
-    needs: [sanitize]
+  merge:
     # use compose-jjb-verify from the v0.4 series of releng-reusable-workflows
     # yamllint disable-line rule:line-length
     uses: ravipendurty/releng-reusable-workflows/.github/workflows/compose-make-merge.yaml@main
     with:
-      GERRIT_BRANCH: ${{ inputs.GERRIT_BRANCH }}
+      #GERRIT_BRANCH: ${{ inputs.GERRIT_BRANCH }}
       # GERRIT_CHANGE_ID: ${{ inputs.GERRIT_CHANGE_ID }}
       # GERRIT_CHANGE_NUMBER: ${{ inputs.GERRIT_CHANGE_NUMBER }}
-      GERRIT_CHANGE_URL: ${{ inputs.GERRIT_CHANGE_URL }}
-      GERRIT_EVENT_TYPE: ${{ inputs.GERRIT_EVENT_TYPE }}
-      GERRIT_PATCHSET_NUMBER: ${{ inputs.GERRIT_PATCHSET_NUMBER }}
-      GERRIT_PATCHSET_REVISION: ${{ inputs.GERRIT_PATCHSET_REVISION }}
-      GERRIT_PROJECT: ${{ github.repository_owner }}/${{ needs.sanitize.outputs.sanitized_project }}
-      GERRIT_REFSPEC: ${{ inputs.GERRIT_REFSPEC }}
+      #GERRIT_CHANGE_URL: ${{ inputs.GERRIT_CHANGE_URL }}
+      #GERRIT_EVENT_TYPE: ${{ inputs.GERRIT_EVENT_TYPE }}
+      #GERRIT_PATCHSET_NUMBER: ${{ inputs.GERRIT_PATCHSET_NUMBER }}
+      #GERRIT_PATCHSET_REVISION: ${{ inputs.GERRIT_PATCHSET_REVISION }}
+      GERRIT_PROJECT: ${{ github.repository_owner }}/${{ github.event.repository.name }}
+      #GERRIT_REFSPEC: ${{ inputs.GERRIT_REFSPEC }}
       JDK_VERSION: "21"
       MVN_VERSION: "3.9.6"
       MAKE_TARGETS: "deploy"
