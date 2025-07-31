@@ -8,10 +8,10 @@ name: Gerrit Composed Maven Merge
 on:
   workflow_dispatch:
     inputs:
-      GERRIT_BRANCH:
-        description: "Branch that change is against"
-        required: true
-        type: string
+      #GERRIT_BRANCH:
+      #  description: "Branch that change is against"
+      #  required: true
+      #  type: string
       # GERRIT_CHANGE_ID:
       #   description: "The ID for the change"
       #   required: true
@@ -20,30 +20,30 @@ on:
       #   description: "The Gerrit number"
       #   required: true
       #   type: string
-      GERRIT_CHANGE_URL:
-        description: "URL to the change"
-        required: true
+      #GERRIT_CHANGE_URL:
+      #  description: "URL to the change"
+      #  required: true
+      #  type: string
+      #GERRIT_EVENT_TYPE:
+      #  description: "Type of Gerrit event"
+      #  required: true
+      #  type: string
+      #GERRIT_PATCHSET_NUMBER:
+      #  description: "The patch number for the change"
+      #  required: true
+      #  type: string
+      #GERRIT_PATCHSET_REVISION:
+      #  description: "The revision sha"
+      #  required: true
+      #  type: string
+      #GERRIT_PROJECT:
+      #  description: "Project in Gerrit"
         type: string
-      GERRIT_EVENT_TYPE:
-        description: "Type of Gerrit event"
-        required: true
-        type: string
-      GERRIT_PATCHSET_NUMBER:
-        description: "The patch number for the change"
-        required: true
-        type: string
-      GERRIT_PATCHSET_REVISION:
-        description: "The revision sha"
-        required: true
-        type: string
-      GERRIT_PROJECT:
-        description: "Project in Gerrit"
-        required: true
-        type: string
-      GERRIT_REFSPEC:
-        description: "Gerrit refspec of change"
-        required: true
-        type: string
+      ##  required: true
+      #GERRIT_REFSPEC:
+      #  description: "Gerrit refspec of change"
+      #  required: true
+      #  type: string
 
 concurrency:
   # yamllint disable-line rule:line-length
@@ -83,5 +83,3 @@ jobs:
       PUSH_NEXUS: true
       # yamllint enable rule:line-length
       ENV_VARS: ${{ toJSON(vars) }}
-
-  
